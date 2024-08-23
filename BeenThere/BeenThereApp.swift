@@ -85,7 +85,6 @@ struct BeenThereApp: App {
                         .statusBarHidden()
                 }
             }
-            .preferredColorScheme(.dark)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     determineUIState()
@@ -113,14 +112,6 @@ struct BeenThereApp: App {
             }
         }
     }
-    
-//    private func setupTerminationObserver() {
-//        NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: nil) { _ in
-//            // The app is about to terminate, save your data here
-//            showSplash = true
-//            print("App is terminating. Saved data to UserDefaults.")
-//        }
-//    }
 }
 
 

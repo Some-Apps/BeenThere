@@ -23,7 +23,6 @@ struct SplashView: View {
                     .shadow(radius: 5)
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 

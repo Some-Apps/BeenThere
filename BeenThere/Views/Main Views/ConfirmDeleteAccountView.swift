@@ -1,12 +1,6 @@
-//
-//  ConfirmDeleteAccountView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 10/22/23.
-//
-
 import SwiftUI
 import Firebase
+import FirebaseAuth
 import AuthenticationServices
 
 struct ConfirmDeleteAccountView: View {
@@ -45,9 +39,12 @@ struct ConfirmDeleteAccountView: View {
                         switch result {
                         case .success(let authResults):
                             if let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential {
-                                let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                                          idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!,
-                                                                          rawNonce: nil)
+                                let credential = OAuthProvider.credential(
+                                    providerID: AuthProviderID.apple,  // Use the new method
+                                    idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!,
+                                    rawNonce: "",  // Provide a rawNonce if you have one, otherwise an empty string
+                                    accessToken: nil  // Pass nil if you don't have an accessToken
+                                )
                                 
                                 Auth.auth().signIn(with: credential) { (authResult, error) in
                                     if let error = error {
@@ -71,9 +68,12 @@ struct ConfirmDeleteAccountView: View {
                         switch result {
                         case .success(let authResults):
                             if let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential {
-                                let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                                          idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!,
-                                                                          rawNonce: nil)
+                                let credential = OAuthProvider.credential(
+                                    providerID: AuthProviderID.apple,  // Use the new method
+                                    idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!,
+                                    rawNonce: "",  // Provide a rawNonce if you have one, otherwise an empty string
+                                    accessToken: nil  // Pass nil if you don't have an accessToken
+                                )
                                 
                                 Auth.auth().signIn(with: credential) { (authResult, error) in
                                     if let error = error {

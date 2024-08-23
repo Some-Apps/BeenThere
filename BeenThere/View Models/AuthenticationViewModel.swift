@@ -2,6 +2,7 @@ import Firebase
 import Foundation
 import GoogleSignIn
 import GoogleSignInSwift
+import FirebaseAuth
 
 class AuthenticationViewModel: ObservableObject {
     func signInWithGoogle() async -> Bool {

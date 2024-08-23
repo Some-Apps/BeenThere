@@ -1,12 +1,6 @@
-//
-//  CreateUsernameView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 11/6/23.
-//
-
 import SwiftUI
 import Firebase
+import FirebaseAuth
 
 struct CreateUsernameView: View {
     @Environment(\.dismiss) var dismiss
@@ -147,7 +141,6 @@ struct CreateUsernameView: View {
                     appState = "notAuthenticated"
                 }
             }
-            .preferredColorScheme(.light)
             .onReceive(timer) { _ in
                 withAnimation(.easeInOut(duration: 2)) {
                     currentImageIndex = Int.random(in: 0..<imageNames.count)

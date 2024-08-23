@@ -1,17 +1,9 @@
-//
-//  LeaderboardView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 10/28/23.
-//
 
 import Kingfisher
 import SwiftUI
 
 struct LeaderboardView: View {
     @EnvironmentObject var viewModel: AccountViewModel
-    @EnvironmentObject var friendMapViewModel: FriendMapViewModel
-    @EnvironmentObject var sharedMapViewModel: SharedMapViewModel
     @State private var leaderboardScope = "friends"
     let scopeOptions = ["friends", "global"]
     
@@ -61,7 +53,7 @@ struct LeaderboardView: View {
                             if !viewModel.sortedFriendsByLocationCount().isEmpty {
                                 ForEach(viewModel.sortedFriendsByLocationCount().indices, id: \.self) { index in
                                     let friend = viewModel.sortedFriendsByLocationCount()[index]
-                                    NavigationLink(destination: FriendView(username: friend["username"] as? String ?? "", firstName: friend["firstName"] as? String ?? "", friend: friend)) {
+//                                    NavigationLink(destination: FriendView(username: friend["username"] as? String ?? "", firstName: friend["firstName"] as? String ?? "", friend: friend)) {
                                         HStack {
                                             Text("\(index + 1).")
                                                 .bold()
@@ -113,7 +105,7 @@ struct LeaderboardView: View {
                                         }
                                         .font(.title3)
                                         .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    }
+//                                    }
                                 }
                                 .listRowBackground(Color.rowBackground)
 
@@ -204,8 +196,6 @@ struct LeaderboardView: View {
 
             .navigationBarTitleDisplayMode(.inline)
         }
-        .environmentObject(friendMapViewModel)
-        .environmentObject(sharedMapViewModel)
         .environmentObject(viewModel)
     }
 }

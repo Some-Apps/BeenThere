@@ -1,11 +1,6 @@
-//
-//  EditProfileView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 11/13/23.
-//
 
 import Firebase
+import FirebaseAuth
 import SwiftUI
 import Kingfisher
 
