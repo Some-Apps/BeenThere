@@ -1,16 +1,10 @@
-//
-//  AccountView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 10/22/23.
-//
-
 import SwiftUI
 import FirebaseAuth
 import AuthenticationServices
 import AlertToast
 
 struct SettingsView: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var viewModel: AccountViewModel
     @AppStorage("appState") var appState = "opening"
 
@@ -29,14 +23,13 @@ struct SettingsView: View {
                 Divider()
                 SettingsItemView(icon: Image("people"), text: "Manage Friends", destinationID: manageFriendsID, navigationPath: $navigationPath)
                 Divider()
-//                SettingsItemView(icon: Image("share"), text: "Sharing", destinationID: sharingID, navigationPath: $navigationPath)
                 SettingsItemView(icon: Image(systemName: "person.slash.fill"), text: "Delete Account", destinationID: deleteAccountID, navigationPath: $navigationPath)
             }
             .padding()
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .foregroundStyle(Color.rowBackground)
+                    .fill(.regularMaterial)
             )
         
     }

@@ -15,8 +15,6 @@
 //        }
 //    }
 //    @Published var friendLocations: [Location] = []
-//    @Published var mapView: MapView?
-//    @Published var annotationManager: PointAnnotationManager?
 //    @Published var tappedLocation: CLLocationCoordinate2D?
 //    @Published var isDarkModeEnabled: Bool = false
 //    @Published var locations: [Location] = []
@@ -26,7 +24,6 @@
 //        didSet {
 //            if !showTappedLocation {
 //                tappedLocation = nil
-//                annotationManager?.annotations.removeAll()
 //            }
 //        }
 //    }
@@ -107,172 +104,10 @@
 //            friendLocations = []
 //        }
 //    }
+//   
 //
 //
-//
-//
-//    func configureMapView(with frame: CGRect, styleURI: StyleURI) {
-//        let mapInitOptions = MapInitOptions(styleURI: styleURI)
-//        mapView?.mapboxMap.onEvery(event: .cameraChanged) { [weak self] _ in
-//            guard let cameraState = self?.mapView?.cameraState else { return }
-//            self?.lastCameraCenter = cameraState.center
-//            self?.lastCameraZoom = cameraState.zoom
-//            self?.lastCameraPitch = cameraState.pitch
-//        }
-//        if let center = lastCameraCenter, let zoom = lastCameraZoom, let pitch = lastCameraPitch {
-//            let lastState = CameraOptions(center: center, zoom: zoom, pitch: pitch)
-//            mapView?.camera.ease(to: lastState, duration: 0.5)
-//        } else {
-//            mapView = MapView(frame: frame, mapInitOptions: mapInitOptions)
-//        }
-//        mapView?.ornaments.scaleBarView.isHidden = true
-//        mapView?.isOpaque = false
-//        mapView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-////        mapView?.location.options.puckType = .puck2D(.makeDefault(showBearing: true))
-//        
-//        let scaleExpression = Exp(.interpolate) {
-//            Exp(.linear)
-//            Exp(.zoom)
-//            0
-//            0.2
-//            8
-//            1
-//            22
-//            1
-//        }
-//
-//        
-//        var puck = Puck2DConfiguration.makeDefault(showBearing: true)
-//        puck.scale = .expression(scaleExpression)
-//        puck.pulsing = .default
-//        mapView?.location.options.puckType = .puck2D(puck)
-//
-//        
-//        self.annotationManager = mapView?.annotations.makePointAnnotationManager()
-//        
-//        mapView?.ornaments.logoView.alpha = 0.1
-//        mapView?.ornaments.attributionButton.alpha = 0.1
-//
-//        mapView?.ornaments.options.logo.position = .bottomLeft
-//        mapView?.ornaments.options.attributionButton.position = .bottomRight
-//        mapView?.ornaments.options.logo.margins = CGPoint(x: 10, y: 20)
-//        mapView?.ornaments.options.attributionButton.margins = CGPoint(x: 0, y: 20)
-//        mapView?.ornaments.scaleBarView.isHidden = true
-//    }
-//
-//    func centerMapOnLocation(location: CLLocation) {
-//        guard let mapView = mapView else { return }
-//        let coordinate = location.coordinate
-//        let zoomLevel = 2
-//        let cameraOptions = CameraOptions(center: coordinate, zoom: Double(zoomLevel), bearing: .zero, pitch: .zero)
-//        mapView.camera.fly(to: cameraOptions, duration: 0.5)
-//        if self.lastCameraCenter != CLLocationCoordinate2D(latitude: 0, longitude: 0) {
-//            self.lastCameraCenter = cameraOptions.center
-//            self.lastCameraZoom = cameraOptions.zoom
-//            self.lastCameraPitch = cameraOptions.pitch
-//        }
-//    }
-//    
-//    func centerMapOnLocationWithoutZoom(location: CLLocation) {
-//        guard let mapView = mapView else { return }
-//        let coordinate = location.coordinate
-////        let zoomLevel = 2
-//        let cameraOptions = CameraOptions(center: coordinate, bearing: .zero, pitch: .zero)
-//        mapView.camera.fly(to: cameraOptions, duration: 0.5)
-//        if self.lastCameraCenter != CLLocationCoordinate2D(latitude: 0, longitude: 0) {
-//            self.lastCameraCenter = cameraOptions.center
-//            self.lastCameraZoom = cameraOptions.zoom
-//            self.lastCameraPitch = cameraOptions.pitch
-//        }
-//    }
-//    
-//    func splashDefault() {
-//        guard let mapView = mapView else { return }
-//        
-//        let cameraOptions = CameraOptions(center: CLLocationCoordinate2D(latitude: 50, longitude: 50), zoom: 0)
-//        mapView.mapboxMap.setCamera(to: cameraOptions)
-//    }
-//    
-//    
-//    
-//    func adjustMapViewToFitSquares(duration: Double = 0.5) {
-//        guard let mapView = mapView else { return }
-//
-//        if mapSelection == .personal {
-//            guard let boundingBox = self.boundingBox(for: self.locations) else { return }
-//            let coordinateBounds = CoordinateBounds(southwest: boundingBox.southWest, northeast: boundingBox.northEast)
-//            let cameraOptions = mapView.mapboxMap.camera(for: coordinateBounds, padding: UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50), bearing: .zero, pitch: .zero)
-//            mapView.camera.fly(to: cameraOptions, duration: duration)
-//            
-//            if self.lastCameraCenter != CLLocationCoordinate2D(latitude: 0, longitude: 0) {
-//                self.lastCameraCenter = cameraOptions.center
-//                self.lastCameraZoom = cameraOptions.zoom
-//                self.lastCameraPitch = cameraOptions.pitch
-//            }
-//        } else {
-//            guard let boundingBox = self.boundingBox(for: self.friendLocations) else { return }
-//            let coordinateBounds = CoordinateBounds(southwest: boundingBox.southWest, northeast: boundingBox.northEast)
-//            let cameraOptions = mapView.mapboxMap.camera(for: coordinateBounds, padding: UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50), bearing: .zero, pitch: .zero)
-//            mapView.camera.fly(to: cameraOptions, duration: duration)
-//            
-//            if self.lastCameraCenter != CLLocationCoordinate2D(latitude: 0, longitude: 0) {
-//                self.lastCameraCenter = cameraOptions.center
-//                self.lastCameraZoom = cameraOptions.zoom
-//                self.lastCameraPitch = cameraOptions.pitch
-//            }
-//        }
-//        
-//
-//        
-//        
-//    }
-//
-//    func addAnnotationAndCenterMap(at coordinate: CLLocationCoordinate2D) {
-//        guard let mapView = mapView, let annotationManager = annotationManager else { return }
-//
-//        annotationManager.annotations.removeAll()
-//
-//        var annotation = PointAnnotation(coordinate: coordinate)
-//        annotation.image = PointAnnotation.Image(image: UIImage(systemName: "pin")!, name: "Pin")
-//        
-//        annotationManager.annotations = [annotation]
-//        
-//        tappedLocation = coordinate
-//        showTappedLocation = true
-//        
-//        // Calculate the offset based on the zoom level
-//        let zoomLevel = mapView.cameraState.zoom
-//        let latitudeOffset = calculateOffset(zoomLevel: zoomLevel, mapViewHeight: mapView.bounds.height)
-//
-//        // Adjust the center position
-//        let adjustedCenter = CLLocationCoordinate2D(
-//            latitude: coordinate.latitude - latitudeOffset,
-//            longitude: coordinate.longitude
-//        )
-//
-//        let cameraOptions = CameraOptions(center: showTappedLocation ? adjustedCenter : coordinate)
-//        mapView.camera.ease(to: cameraOptions, duration: 0.5)
-//
-//        lastCameraCenter = coordinate
-//    }
-//
-//
-//    private func calculateOffset(zoomLevel: CGFloat, mapViewHeight: CGFloat) -> CLLocationDegrees {
-//        let degreesPerScreenHeightAtZoom0: CLLocationDegrees = 360
-//        let screenHeightPercentage: CGFloat = 0.10
-//
-//        let scale = pow(2, zoomLevel)
-//        return degreesPerScreenHeightAtZoom0 * screenHeightPercentage / scale
-//    }
-//    
-//    func updateMapStyleURL() {
-//        if UITraitCollection.current.userInterfaceStyle == .dark {
-//            self.mapView?.mapboxMap.style.uri = StyleURI(rawValue: "mapbox://styles/jaredjones/clot6czi600kb01qq4arcfy2g")
-//        } else {
-//            self.mapView?.mapboxMap.style.uri = StyleURI(rawValue: "mapbox://styles/jaredjones/clot66ah300l501pe2lmbg11p")
-//        }
-//    }
-//    
+//   
 //    func addSquaresToMap(locations: [Location]) {
 //        guard let mapView = mapView else { return }
 //
@@ -360,24 +195,10 @@
 //    
 //    func checkAndAddSquaresIfNeeded() {
 //        if areSquaresAdded() {
-//            clearExistingSquares()
 //            addSquaresToMap(locations: locations)
 //        }
 //    }
 //
-//    func clearExistingSquares() {
-//        guard let mapView = mapView else { return }
-//        let sourceId = "square-source"
-//        let layerId = "square-fill-layer"
-//
-//        if mapView.mapboxMap.style.sourceExists(withId: sourceId) {
-//            try? mapView.mapboxMap.style.removeSource(withId: sourceId)
-//        }
-//
-//        if mapView.mapboxMap.style.layerExists(withId: layerId) {
-//            try? mapView.mapboxMap.style.removeLayer(withId: layerId)
-//        }
-//    }
 //
 //
 //
@@ -434,63 +255,7 @@
 //        return gridlines
 //    }
 //
-//    
-//    func addGridlinesToMap() {
-//        guard let mapView = mapView else { return }
-//        
-//        let gridlines = generateGridlines()
-//        let features = gridlines.map { Feature(geometry: .lineString($0)) }
 //
-//        var source = GeoJSONSource()
-//        source.data = .featureCollection(FeatureCollection(features: features))
-//
-//        let addLayer = {
-//            var lineLayer = LineLayer(id: "gridline-layer")
-//            lineLayer.source = "gridline-source"
-//            lineLayer.lineColor = .constant(StyleColor(self.isDarkModeEnabled ? .white : .black))
-//            lineLayer.lineWidth = .constant(1)
-//
-//            let opacityExpression = Exp(.interpolate) {
-//                Exp(.linear)
-//                Exp(.zoom)
-//                0
-//                0
-//                6
-//                0
-//                22
-//                1
-//            }
-//            lineLayer.lineOpacity = .expression(opacityExpression)
-//
-//            do {
-//                if mapView.mapboxMap.style.layerExists(withId: "road-simple") {
-//                    try mapView.mapboxMap.style.addLayer(lineLayer, layerPosition: .above("road-simple"))
-//                } else {
-//                    try mapView.mapboxMap.style.addLayer(lineLayer)
-//                }
-//            } catch {
-//                print("Error adding gridlines to the map: \(error)")
-//            }
-//        }
-//
-//        if mapView.mapboxMap.style.isLoaded {
-//            do {
-//                try mapView.mapboxMap.style.addSource(source, id: "gridline-source")
-//                addLayer()
-//            } catch {
-//                print("Error adding gridlines source to the map: \(error)")
-//            }
-//        } else {
-//            mapView.mapboxMap.onNext(event: .styleLoaded) { _ in
-//                do {
-//                    try mapView.mapboxMap.style.addSource(source, id: "gridline-source")
-//                    addLayer()
-//                } catch {
-//                    print("Error adding gridlines source to the map: \(error)")
-//                }
-//            }
-//        }
-//    }
 //    
 //    func checkBeenThere(location: CLLocation) {
 //        let latitude = location.coordinate.latitude

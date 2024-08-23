@@ -3,10 +3,13 @@ import CoreLocation
 import FirebaseAuth
 import Kingfisher
 import MapKit
+import FirebaseFirestore
 
 struct ContentView: View {    
     @AppStorage("username") var username = ""
     @AppStorage("appState") var appState = "opening"
+    @StateObject var accountViewModel = AccountViewModel()
+
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var locationManagerDelegate = LocationManagerDelegate()
     @State private var isNavigationActive = false
@@ -18,10 +21,7 @@ struct ContentView: View {
     @State private var showNavigation = false
     @State private var isInteractingWithSlidyView = false
     @State private var showSpeedAlert = false
-    @State private var showSplash: Bool = true
-    @State private var splashOpacity = 1.0
     @State private var selection = 2
-
 
     var usesMetric: Bool {
         let locale = Locale.current
@@ -79,6 +79,7 @@ struct ContentView: View {
 }
 
 class LocationManagerDelegate: NSObject, CLLocationManagerDelegate, ObservableObject {
+    @ObservedObject var viewModel = AccountViewModel()
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var location: CLLocation?
     @Published var region = MKCoordinateRegion(
@@ -93,6 +94,7 @@ class LocationManagerDelegate: NSObject, CLLocationManagerDelegate, ObservableOb
         super.init()
         self.locationManager?.delegate = self
         self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager?.distanceFilter = 100
         self.locationManager?.startUpdatingLocation()
     }
     
@@ -114,10 +116,83 @@ class LocationManagerDelegate: NSObject, CLLocationManagerDelegate, ObservableOb
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         self.location = location
-        self.region = MKCoordinateRegion(
-            center: location.coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        )
+        if let newLocation = locations.last {
+//            print("Speed Accuracy: \(newLocation.speedAccuracy.description)")
+//            print("Speed: \(newLocation.speed.description)")
+            if newLocation.speedAccuracy.magnitude < 10 * 0.44704 && newLocation.speedAccuracy != -1 {
+                if newLocation.speed <= 100 * 0.44704 && newLocation.speed.magnitude != -1 {
+                    checkBeenThere(location: newLocation)
+                } else {
+                    print("Average speed is over 100 mph. Location not updated.")
+                }
+            }
+        }
+
+    }
+    
+    func checkBeenThere(location: CLLocation) {
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+
+        let increment: Double = 0.25
+        
+        let lowLatitude = floor(latitude / increment) * increment
+        let highLatitude = lowLatitude + increment
+        let lowLongitude = floor(longitude / increment) * increment
+        let highLongitude = lowLongitude + increment
+
+        let locationExists = viewModel.locations.contains { existingLocation in
+            existingLocation.lowLatitude == lowLatitude &&
+            existingLocation.highLatitude == highLatitude &&
+            existingLocation.lowLongitude == lowLongitude &&
+            existingLocation.highLongitude == highLongitude
+        }
+
+        if !locationExists {
+            print("LOG: Saving to firestore")
+            saveLocationToFirestore(lowLat: lowLatitude, highLat: highLatitude, lowLong: lowLongitude, highLong: highLongitude)
+        }
+    }
+
+
+    func saveLocationToFirestore(lowLat: Double, highLat: Double, lowLong: Double, highLong: Double) {
+        let locationData: [String: Any] = [
+            "lowLatitude": lowLat,
+            "highLatitude": highLat,
+            "lowLongitude": lowLong,
+            "highLongitude": highLong
+        ]
+        
+        guard let userID = Auth.auth().currentUser?.uid else {
+            print("Error: No authenticated user found")
+            return
+        }
+
+        let userDocumentRef = Firestore.firestore().collection("users").document(userID)
+        
+        userDocumentRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                userDocumentRef.updateData([
+                    "locations": FieldValue.arrayUnion([locationData])
+                ]) { error in
+                    if let error = error {
+                        print("Error adding location: \(error)")
+                    } else {
+                        print("Location successfully updated!")
+                    }
+                }
+            } else {
+                userDocumentRef.setData([
+                    "locations": [locationData]
+                ]) { error in
+                    if let error = error {
+                        print("Error creating document with location: \(error)")
+                    } else {
+                        print("Document successfully created with location!")
+                    }
+                }
+            }
+        }
     }
 }
 

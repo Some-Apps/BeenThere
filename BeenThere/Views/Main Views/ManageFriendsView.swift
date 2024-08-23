@@ -42,7 +42,6 @@ struct ManageFriendsView: View {
                     newFriendUsername = ""
                 }
             }
-            .listRowBackground(Color.rowBackground)
 
             if !accountViewModel.sentFriendRequests.isEmpty {
                 Section("Sent") {
@@ -65,7 +64,6 @@ struct ManageFriendsView: View {
                             
                         }
                     }
-                    .listRowBackground(Color.rowBackground)
 
                 }
             }
@@ -99,7 +97,6 @@ struct ManageFriendsView: View {
                                 
                             }
                         }
-                        .listRowBackground(Color.rowBackground)
 
                     }
                     
@@ -134,7 +131,6 @@ struct ManageFriendsView: View {
                                         VStack(alignment: .leading) {
                                             Text(firstName)
                                                 .font(.title2)
-                                                .foregroundStyle(Color.mutedPrimary)
 
                                             Text("@\(username)")
                                                 .foregroundStyle(.secondary)
@@ -163,7 +159,6 @@ struct ManageFriendsView: View {
                             }
                         }
                     }
-                    .listRowBackground(Color.rowBackground)
 
                 }
 
@@ -172,7 +167,6 @@ struct ManageFriendsView: View {
        }
         
         .listStyle(.plain)
-        .background(Color.background)
         .navigationTitle("Manage Friends")
         .onAppear {
             accountViewModel.updateUsernames()

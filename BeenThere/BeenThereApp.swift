@@ -54,11 +54,6 @@ struct BeenThereApp: App {
 
     @AppStorage("appState") var appState = "notAuthenticated"
     @AppStorage("username") var username = ""
-
-
-//    init() {
-//        setupTerminationObserver()
-//    }
     
     var body: some Scene {
         WindowGroup {

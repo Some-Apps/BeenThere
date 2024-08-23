@@ -27,6 +27,8 @@
 		C08DFAC42C78F25D00F7EBCD /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C08DFAC32C78F25D00F7EBCD /* GoogleSignInSwift */; };
 		C08DFAC72C78F29500F7EBCD /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = C08DFAC62C78F29500F7EBCD /* AlertToast */; };
 		C08DFAC92C7906A500F7EBCD /* MainMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFAC82C7906A500F7EBCD /* MainMapView.swift */; };
+		C08DFACB2C791A8F00F7EBCD /* LeaderboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFACA2C791A8F00F7EBCD /* LeaderboardViewModel.swift */; };
+		C08DFACD2C791C4A00F7EBCD /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFACC2C791C4900F7EBCD /* ProfileViewModel.swift */; };
 		C0949F022AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0949F012AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift */; };
 		C0949F042AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0949F032AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift */; };
 		C09C69932AE88405008A3148 /* FriendMapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09C69922AE88405008A3148 /* FriendMapViewModel.swift */; };
@@ -43,7 +45,6 @@
 		C0D2A90C2AE593D1006326C1 /* ManageFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D2A90B2AE593D1006326C1 /* ManageFriendsView.swift */; };
 		C0EAC0BB2B1409250003B44E /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0EAC0BA2B1409250003B44E /* Enums.swift */; };
 		C0F46EE72AF954A000C2776A /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0F46EE62AF954A000C2776A /* FeedViewModel.swift */; };
-		C0F46EED2AF9BD3400C2776A /* MainMapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0F46EEC2AF9BD3400C2776A /* MainMapViewModel.swift */; };
 		C0FDEA702B506E7E00F728BA /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FDEA6F2B506E7E00F728BA /* Friend.swift */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +76,8 @@
 		C053C1B62AFA950C006B1230 /* CreateUsernameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateUsernameView.swift; sourceTree = "<group>"; };
 		C08531722AF2C03A00EAA434 /* SharedMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMapViewModel.swift; sourceTree = "<group>"; };
 		C08DFAC82C7906A500F7EBCD /* MainMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMapView.swift; sourceTree = "<group>"; };
+		C08DFACA2C791A8F00F7EBCD /* LeaderboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardViewModel.swift; sourceTree = "<group>"; };
+		C08DFACC2C791C4900F7EBCD /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		C0949F012AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageFriendsViewModel.swift; sourceTree = "<group>"; };
 		C0949F032AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDeleteAccountView.swift; sourceTree = "<group>"; };
 		C09C69922AE88405008A3148 /* FriendMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendMapViewModel.swift; sourceTree = "<group>"; };
@@ -93,7 +96,6 @@
 		C0D2A90B2AE593D1006326C1 /* ManageFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageFriendsView.swift; sourceTree = "<group>"; };
 		C0EAC0BA2B1409250003B44E /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		C0F46EE62AF954A000C2776A /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
-		C0F46EEC2AF9BD3400C2776A /* MainMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMapViewModel.swift; sourceTree = "<group>"; };
 		C0FDEA6F2B506E7E00F728BA /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -152,7 +154,6 @@
 				C0C316922B54CC9600192C89 /* AuthenticationViewModel.swift */,
 				C0D2A9092AE58EF5006326C1 /* AccountViewModel.swift */,
 				C0F46EE62AF954A000C2776A /* FeedViewModel.swift */,
-				C0F46EEC2AF9BD3400C2776A /* MainMapViewModel.swift */,
 				C0B4C0232B0126A0006D5022 /* TemplateMapViewModel.swift */,
 				C09C69922AE88405008A3148 /* FriendMapViewModel.swift */,
 				C0949F012AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift */,
@@ -169,7 +170,9 @@
 				C08DFAC82C7906A500F7EBCD /* MainMapView.swift */,
 				C09C6FAD2B530EFA00D07748 /* SplashView.swift */,
 				C0245CCC2AF947CD00C7CD4F /* ProfileView.swift */,
+				C08DFACC2C791C4900F7EBCD /* ProfileViewModel.swift */,
 				C044EF072AED84D800AEC9E2 /* LeaderboardView.swift */,
+				C08DFACA2C791A8F00F7EBCD /* LeaderboardViewModel.swift */,
 				C0949F032AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift */,
 				C053C1B42AFA94E6006B1230 /* LoginView.swift */,
 				C053C1B62AFA950C006B1230 /* CreateUsernameView.swift */,
@@ -332,6 +335,7 @@
 				C08531732AF2C03A00EAA434 /* SharedMapViewModel.swift in Sources */,
 				C0FDEA702B506E7E00F728BA /* Friend.swift in Sources */,
 				C0D2A90A2AE58EF5006326C1 /* AccountViewModel.swift in Sources */,
+				C08DFACB2C791A8F00F7EBCD /* LeaderboardViewModel.swift in Sources */,
 				C0C808D82ADD83420070E679 /* BeenThereApp.swift in Sources */,
 				C01B08522B2CDA300097D828 /* SettingsItemView.swift in Sources */,
 				C0EAC0BB2B1409250003B44E /* Enums.swift in Sources */,
@@ -345,11 +349,11 @@
 				C0245CCD2AF947CD00C7CD4F /* ProfileView.swift in Sources */,
 				C0949F022AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift in Sources */,
 				C08DFAC92C7906A500F7EBCD /* MainMapView.swift in Sources */,
+				C08DFACD2C791C4A00F7EBCD /* ProfileViewModel.swift in Sources */,
 				C0D2A90C2AE593D1006326C1 /* ManageFriendsView.swift in Sources */,
 				C0949F042AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift in Sources */,
 				C0C316932B54CC9600192C89 /* AuthenticationViewModel.swift in Sources */,
 				C001517D2AF53211007DA96F /* ChangeUsernameView.swift in Sources */,
-				C0F46EED2AF9BD3400C2776A /* MainMapViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,7 +486,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BeenThere/BeenThere.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "BeenThere/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = 5SGZH379X4;
 				ENABLE_PREVIEWS = YES;
@@ -502,7 +506,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.12;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jareddanieljones.BeenThere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -521,7 +525,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BeenThere/BeenThere.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "BeenThere/Resources/Preview\\ Content";
 				DEVELOPMENT_TEAM = 5SGZH379X4;
 				ENABLE_PREVIEWS = YES;
@@ -541,7 +545,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.12;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jareddanieljones.BeenThere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
