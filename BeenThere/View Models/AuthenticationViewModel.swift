@@ -4,7 +4,7 @@ import GoogleSignIn
 import GoogleSignInSwift
 import FirebaseAuth
 
-class AuthenticationViewModel: ObservableObject {
+class LoginViewModel: ObservableObject {
     func signInWithGoogle() async -> Bool {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             fatalError("No client ID found in Firebase configuration")

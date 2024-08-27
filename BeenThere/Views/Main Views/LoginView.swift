@@ -11,7 +11,7 @@ struct LoginView: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
     @State private var isAppleSignInPresented: Bool = false
     @State private var currentImageIndex: Int = 0
-    @ObservedObject var viewModel = AuthenticationViewModel()
+    @ObservedObject var viewModel = LoginViewModel()
 
     var body: some View {
         GeometryReader { geometry in

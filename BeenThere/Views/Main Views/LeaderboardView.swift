@@ -2,8 +2,8 @@ import Kingfisher
 import SwiftUI
 
 struct LeaderboardView: View {
+    @EnvironmentObject var viewModel: LeaderboardViewModel
     @State private var leaderboardScope = "friends"
-    @StateObject private var viewModel = LeaderboardViewModel()
     let scopeOptions = ["friends", "global"]
     
     var body: some View {
@@ -18,14 +18,7 @@ struct LeaderboardView: View {
                     .pickerStyle(.segmented)
                     .padding()
                     .padding(.top)
-                    .onDisappear {
-                        viewModel.updateProfileImages()
-                    }
-                    .onAppear {
-                        if viewModel.users.count == 0 {
-                            viewModel.setUpFirestoreListener()
-                        }
-                    }
+                
                 } else {
                     Picker("Scope", selection: $leaderboardScope) {
                         ForEach(scopeOptions, id: \.self) {
@@ -34,12 +27,7 @@ struct LeaderboardView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding()
-                    .onDisappear {
-                        viewModel.removeListeners()
-                    }
-                    .onAppear {
-                            viewModel.setUpFirestoreListener()
-                    }
+                    
                 }
                 Spacer()
                     // TODO: global and friends should be refactored into a single stuct that can be reused

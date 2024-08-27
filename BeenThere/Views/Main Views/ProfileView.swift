@@ -3,7 +3,7 @@ import Kingfisher
 
 struct ProfileView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel = ProfileViewModel()
+    @EnvironmentObject var viewModel: ProfileViewModel
     @AppStorage("appState") var appState = "authenticated"
     @State private var navigationPath = NavigationPath()
 
@@ -34,6 +34,9 @@ struct ProfileView: View {
                         .fontWeight(.bold)
 
                     Text(viewModel.locations.count == 1 ? "\(viewModel.locations.count) Chunk Explored" : "\(viewModel.locations.count) Chunks Explored")
+                        .fontWeight(.regular)
+                        .foregroundStyle(.secondary)
+                    Text("(\(Double(viewModel.locations.count) / 1036800 * 100, specifier: "%.3f")% of the Earth)")
                         .fontWeight(.regular)
                         .foregroundStyle(.secondary)
                     SettingsView(navigationPath: $navigationPath)

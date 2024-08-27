@@ -51,6 +51,9 @@ struct BeenThereApp: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject var authViewModel = AuthViewModel()
     @StateObject var accountViewModel = AccountViewModel()
+    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
+    @StateObject private var locationManagerDelegate = LocationManagerDelegate()
+    @StateObject private var profileViewModel = ProfileViewModel()
 
     @AppStorage("appState") var appState = "notAuthenticated"
     @AppStorage("username") var username = ""
@@ -91,6 +94,8 @@ struct BeenThereApp: App {
         }
         .environmentObject(accountViewModel)
         .environmentObject(authViewModel)
+        .environmentObject(leaderboardViewModel)
+        .environmentObject(profileViewModel)
     }
     
     func determineUIState() {

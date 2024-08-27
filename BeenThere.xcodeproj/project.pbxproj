@@ -29,6 +29,8 @@
 		C08DFAC92C7906A500F7EBCD /* MainMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFAC82C7906A500F7EBCD /* MainMapView.swift */; };
 		C08DFACB2C791A8F00F7EBCD /* LeaderboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFACA2C791A8F00F7EBCD /* LeaderboardViewModel.swift */; };
 		C08DFACD2C791C4A00F7EBCD /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFACC2C791C4900F7EBCD /* ProfileViewModel.swift */; };
+		C08DFAD32C7CE55300F7EBCD /* FirestoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFAD22C7CE55300F7EBCD /* FirestoreRepository.swift */; };
+		C08DFAD52C7CE57900F7EBCD /* FirestoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08DFAD42C7CE57900F7EBCD /* FirestoreData.swift */; };
 		C0949F022AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0949F012AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift */; };
 		C0949F042AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0949F032AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift */; };
 		C09C69932AE88405008A3148 /* FriendMapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09C69922AE88405008A3148 /* FriendMapViewModel.swift */; };
@@ -78,6 +80,8 @@
 		C08DFAC82C7906A500F7EBCD /* MainMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMapView.swift; sourceTree = "<group>"; };
 		C08DFACA2C791A8F00F7EBCD /* LeaderboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardViewModel.swift; sourceTree = "<group>"; };
 		C08DFACC2C791C4900F7EBCD /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		C08DFAD22C7CE55300F7EBCD /* FirestoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreRepository.swift; sourceTree = "<group>"; };
+		C08DFAD42C7CE57900F7EBCD /* FirestoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreData.swift; sourceTree = "<group>"; };
 		C0949F012AE5BD5C006EE5D2 /* ManageFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageFriendsViewModel.swift; sourceTree = "<group>"; };
 		C0949F032AE5C484006EE5D2 /* ConfirmDeleteAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDeleteAccountView.swift; sourceTree = "<group>"; };
 		C09C69922AE88405008A3148 /* FriendMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendMapViewModel.swift; sourceTree = "<group>"; };
@@ -199,6 +203,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C08DFAD12C7CE53000F7EBCD /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C08DFAD22C7CE55300F7EBCD /* FirestoreRepository.swift */,
+				C08DFAD42C7CE57900F7EBCD /* FirestoreData.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		C0C808CB2ADD83420070E679 = {
 			isa = PBXGroup;
 			children = (
@@ -225,6 +238,7 @@
 				C03424C12B0C51ED00A9CA9A /* Views */,
 				C03424C22B0C52BB00A9CA9A /* Models */,
 				C03424C32B0C52C500A9CA9A /* View Models */,
+				C08DFAD12C7CE53000F7EBCD /* Data */,
 				C03424C02B0C51C500A9CA9A /* Resources */,
 			);
 			path = BeenThere;
@@ -326,6 +340,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0C808DA2ADD83420070E679 /* ContentView.swift in Sources */,
+				C08DFAD32C7CE55300F7EBCD /* FirestoreRepository.swift in Sources */,
 				C09C69932AE88405008A3148 /* FriendMapViewModel.swift in Sources */,
 				C04E072C2B02BA2500340D58 /* EditProfileViewModel.swift in Sources */,
 				C09C6FAE2B530EFA00D07748 /* SplashView.swift in Sources */,
@@ -344,6 +359,7 @@
 				C053C1B72AFA950C006B1230 /* CreateUsernameView.swift in Sources */,
 				C0D2A9082AE585CB006326C1 /* SettingsView.swift in Sources */,
 				C0B4C0242B0126A0006D5022 /* TemplateMapViewModel.swift in Sources */,
+				C08DFAD52C7CE57900F7EBCD /* FirestoreData.swift in Sources */,
 				C0F46EE72AF954A000C2776A /* FeedViewModel.swift in Sources */,
 				C03424C72B0C55BD00A9CA9A /* Post.swift in Sources */,
 				C0245CCD2AF947CD00C7CD4F /* ProfileView.swift in Sources */,

@@ -32,7 +32,7 @@ class AccountViewModel: ObservableObject {
             observeLocations()
         }
     }
-    @Published var displayedLocations: [Location] = []
+    @Published var displayedLocations: [Location] = [] 
     @Published var isCheckingUsername: Bool = false
     @Published var isUsernameTaken: Bool = false
     @Published var friends: [[String: Any]] = []
@@ -120,16 +120,23 @@ class AccountViewModel: ObservableObject {
     }
     
     func observeLocations() {
-        switch mapSelection {
-        case .personal:
-            self.displayedLocations = locations
-        case .global:
-            self.displayedLocations = userLocations
-        case .friend(let friendID):
-            fetchFriendLocations(id: friendID)
-            self.displayedLocations = friendLocations
+        DispatchQueue.global(qos: .userInitiated).async {
+            let locations: [Location]
+            switch self.mapSelection {
+            case .personal:
+                locations = self.locations
+            case .global:
+                locations = self.userLocations
+            case .friend(let friendID):
+                self.fetchFriendLocations(id: friendID)
+                locations = self.friendLocations
+            }
+            DispatchQueue.main.async {
+                self.displayedLocations = locations
+            }
         }
     }
+
     
     func fetchFriendLocations(id: String) {
         if let friend = friends.first(where: { $0["uid"] as? String == id }),

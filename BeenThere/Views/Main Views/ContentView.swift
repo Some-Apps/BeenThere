@@ -5,13 +5,15 @@ import Kingfisher
 import MapKit
 import FirebaseFirestore
 
-struct ContentView: View {    
+struct ContentView: View {
     @AppStorage("username") var username = ""
     @AppStorage("appState") var appState = "opening"
-    @StateObject var accountViewModel = AccountViewModel()
+    
+    @EnvironmentObject var accountViewModel: AccountViewModel
+    @StateObject private var locationManagerDelegate = LocationManagerDelegate()
 
     @EnvironmentObject var authViewModel: AuthViewModel
-    @StateObject private var locationManagerDelegate = LocationManagerDelegate()
+    
     @State private var isNavigationActive = false
     @State private var isKeyboardVisible = false
     @State private var showTestDialog = false
@@ -22,6 +24,8 @@ struct ContentView: View {
     @State private var isInteractingWithSlidyView = false
     @State private var showSpeedAlert = false
     @State private var selection = 2
+    @State private var showOverlay = true
+    @State private var animateMap = false
 
     var usesMetric: Bool {
         let locale = Locale.current
@@ -34,27 +38,45 @@ struct ContentView: View {
             return true
         }
     }
-
+    
     var body: some View {
-        TabView(selection: $selection) {
-            ProfileView()
-                .tabItem {
-                    Label("Profile", systemImage: "person")
-                }
-                .tag(1)
-            MainMapView()
-            .tabItem {
-                Label("Map", systemImage: "map")
+        ZStack {
+            TabView(selection: $selection) {
+                ProfileView()
+                    .tabItem {
+                        Label("Profile", systemImage: "person")
+                    }
+                    .tag(1)
+                MainMapView()
+                    .opacity(animateMap ? 1 : 0) // Start map invisible
+                    .animation(.easeInOut(duration: 0.5), value: animateMap) // Animate opacity and scale
+                    .onAppear {
+                        locationManagerDelegate.requestLocationAccess()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            showOverlay = false
+                            animateMap = true // Trigger map animation after splash screen disappears
+                        }
+                    }
+                    .tabItem {
+                        Label("Map", systemImage: "map")
+                    }
+                    .tag(2)
+                LeaderboardView()
+                    .tabItem {
+                        Label("Leaderboard", systemImage: "person.3")
+                    }
+                    .tag(3)
             }
-            .tag(2)
-            LeaderboardView()
-                .tabItem {
-                    Label("Leaderboards", systemImage: "person.3")
+            .onAppear {
+                if accountViewModel.listeners.count == 0 {
+                    accountViewModel.setUpFirestoreListener()
                 }
-                .tag(3)
-        }
-        .onAppear {
-            locationManagerDelegate.requestLocationAccess()
+            }
+            
+            if showOverlay {
+                SplashView()
+                    .transition(.opacity) // Transition to smoothly fade out the splash screen
+            }
         }
     }
     
@@ -77,6 +99,8 @@ struct ContentView: View {
         }
     }
 }
+
+
 
 class LocationManagerDelegate: NSObject, CLLocationManagerDelegate, ObservableObject {
     @ObservedObject var viewModel = AccountViewModel()
@@ -117,8 +141,6 @@ class LocationManagerDelegate: NSObject, CLLocationManagerDelegate, ObservableOb
         guard let location = locations.last else { return }
         self.location = location
         if let newLocation = locations.last {
-//            print("Speed Accuracy: \(newLocation.speedAccuracy.description)")
-//            print("Speed: \(newLocation.speed.description)")
             if newLocation.speedAccuracy.magnitude < 10 * 0.44704 && newLocation.speedAccuracy != -1 {
                 if newLocation.speed <= 100 * 0.44704 && newLocation.speed.magnitude != -1 {
                     checkBeenThere(location: newLocation)
