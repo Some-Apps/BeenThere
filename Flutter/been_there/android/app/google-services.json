@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "937513767406",
+    "project_id": "beenthere-f863f",
+    "storage_bucket": "beenthere-f863f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937513767406:android:0106b5b93a4ceef0d7beff",
+        "android_client_info": {
+          "package_name": "com.example.beenthere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937513767406-62ulv875rlpl7q36fcbth8q8c3qfbns6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqQs0ppT2KxEkgrALgm1VkFunWW29-HBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937513767406-62ulv875rlpl7q36fcbth8q8c3qfbns6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "937513767406-0af38m2d1gvmruhipoll6cg7okro45mt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.beenthere"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
