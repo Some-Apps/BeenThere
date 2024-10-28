@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAqQs0ppT2KxEkgrALgm1VkFunWW29-HBc',
-    appId: '1:937513767406:android:0106b5b93a4ceef0d7beff',
+    appId: '1:937513767406:android:75c0cb1814c4367bd7beff',
     messagingSenderId: '937513767406',
     projectId: 'beenthere-f863f',
     storageBucket: 'beenthere-f863f.appspot.com',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD-Vm-9yfg_S5x9RnB1xYfcTEUFIgaMUj0',
-    appId: '1:937513767406:ios:0a46b75255ebb044d7beff',
+    appId: '1:937513767406:ios:62bf86db09f1ac30d7beff',
     messagingSenderId: '937513767406',
     projectId: 'beenthere-f863f',
     storageBucket: 'beenthere-f863f.appspot.com',
@@ -67,4 +67,5 @@ class DefaultFirebaseOptions {
     iosClientId: '937513767406-eej8mh3q0092ovemata699vcs58okn3h.apps.googleusercontent.com',
     iosBundleId: 'com.example.beenThere',
   );
+
 }
