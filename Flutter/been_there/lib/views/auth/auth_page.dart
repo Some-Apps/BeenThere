@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-
 class AuthPage extends ConsumerWidget {
   const AuthPage({super.key});
 
@@ -50,15 +49,14 @@ class AuthPage extends ConsumerWidget {
       );
     }
 
-    // Redirect to home page after authentication
+    // Redirect to main page after authentication
     if (authState.status == AuthStatus.authenticated) {
-      final appUser = ref.read(authViewModelProvider).user;
+      final appUser = authState.user;
 
       if (appUser != null) {
         Future.microtask(() {
-          ref.read(appUserProvider.notifier).state =
-              appUser; // Store appUser globally
-          context.go('/map'); // No need to pass appUser here
+          ref.read(appUserProvider.notifier).state = appUser; // Store appUser globally
+          context.go('/main'); // Navigate to '/main' instead of '/map'
         });
       } else {
         Future.microtask(() {
@@ -80,4 +78,4 @@ class AuthPage extends ConsumerWidget {
     // Default to Login or Signup page
     return const LoginPage();
   }
-} /*  */
+}

@@ -1,12 +1,15 @@
-import 'dart:async';
+// lib/views/pages/map_page.dart
+
 import 'dart:convert';
 import 'package:been_there/models/chunk.dart';
 import 'package:been_there/view_models/auth_view_model.dart';
+import 'package:been_there/view_models/location_provider.dart';
 import 'package:been_there/view_models/location_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:fluttertoast/fluttertoast.dart'; // For displaying toasts
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -15,21 +18,80 @@ class MapPage extends ConsumerStatefulWidget {
   ConsumerState<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends ConsumerState<MapPage> {
+class _MapPageState extends ConsumerState<MapPage>
+    with AutomaticKeepAliveClientMixin<MapPage>, WidgetsBindingObserver {
+  @override
+  bool get wantKeepAlive => true; // Ensures the state is preserved
+
   MapboxMap? _mapboxMap;
-  bool _isMapReady = false; // Track map readiness
+  bool _isMapReady = false;
+  bool _hasAnimatedToChunks = false;
+  CameraOptions? _savedCameraOptions;
+  late PointAnnotationManager _pointAnnotationManager;
+  PointAnnotation? _currentLocationAnnotation;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    if (_mapboxMap != null) {
+      // Save the current camera position
+      _mapboxMap!.getCameraState().then((cameraState) {
+        _savedCameraOptions = CameraOptions(
+          center: cameraState.center,
+          zoom: cameraState.zoom,
+          bearing: cameraState.bearing,
+          pitch: cameraState.pitch,
+        );
+      });
+    }
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     final appUser = ref.watch(appUserProvider);
-    MapboxOptions.setAccessToken("YOUR_MAPBOX_ACCESS_TOKEN");
+    MapboxOptions.setAccessToken("YOUR_MAPBOX_ACCESS_TOKEN"); // Replace with your actual token
 
-    // Set initial camera options
-    CameraOptions camera = CameraOptions(
-      center: Point(coordinates: Position(-98.0, 39.5)),
-      zoom: 2,
-      bearing: 0,
-      pitch: 0,
+    // Set initial camera options only if not already saved
+    CameraOptions camera = _savedCameraOptions ??
+        CameraOptions(
+          center: Point(coordinates: Position(-98.0, 39.5)),
+          zoom: 2,
+          bearing: 0,
+          pitch: 0,
+        );
+
+    // Listen to location updates
+    final locationAsyncValue = ref.watch(locationProvider);
+
+    locationAsyncValue.when(
+      data: (position) {
+        if (_mapboxMap != null) {
+          _updateUserLocationOnMap(position);
+        }
+      },
+      loading: () {
+        // Optionally, show a loading indicator or do nothing
+      },
+      error: (error, stack) {
+        // Handle errors, possibly show a toast
+        print('Error fetching location: $error');
+        Fluttertoast.showToast(
+          msg: 'Error fetching location: $error',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      },
     );
 
     return Scaffold(
@@ -41,34 +103,49 @@ class _MapPageState extends ConsumerState<MapPage> {
             styleUri: MediaQuery.of(context).platformBrightness == Brightness.dark
                 ? "mapbox://styles/jaredjones/clot6czi600kb01qq4arcfy2g"
                 : "mapbox://styles/jaredjones/clot66ah300l501pe2lmbg11p",
-            onMapCreated: (mapboxMap) {
+            onMapCreated: (mapboxMap) async {
               _mapboxMap = mapboxMap;
               _isMapReady = true;
 
+              // Optionally, restore saved camera position
+              if (_savedCameraOptions != null) {
+                await _mapboxMap!.setCamera(_savedCameraOptions!);
+              }
+
+              // Initialize PointAnnotationManager
+              _pointAnnotationManager =
+                  await _mapboxMap!.annotations.createPointAnnotationManager();
+
               final appUser = ref.read(appUserProvider);
-              if (appUser != null) {
+              if (appUser != null && !_hasAnimatedToChunks) {
                 final locationChunks = ref.read(locationViewModelProvider(appUser.id));
                 if (locationChunks.isNotEmpty) {
                   _updateChunksOnMap(mapboxMap, locationChunks);
                   _addGridLines(mapboxMap);
                   _centerMapOnChunks();
+                  _hasAnimatedToChunks = true; // Set the flag after animation
                 }
               }
             },
           ),
-          // Use ProviderListener to listen for changes in locationChunks
+          // Use Consumer to listen for changes in locationChunks
           if (appUser != null)
             Consumer(
               builder: (context, ref, child) {
                 final appUser = ref.watch(appUserProvider);
                 if (appUser != null) {
-                  final locationChunks = ref.watch(locationViewModelProvider(appUser.id));
-                  if (_isMapReady && _mapboxMap != null && locationChunks.isNotEmpty) {
+                  final locationChunks =
+                      ref.watch(locationViewModelProvider(appUser.id));
+                  if (_isMapReady &&
+                      _mapboxMap != null &&
+                      locationChunks.isNotEmpty &&
+                      !_hasAnimatedToChunks) {
                     _updateChunksOnMap(_mapboxMap!, locationChunks);
                     _centerMapOnChunks();
+                    _hasAnimatedToChunks = true; // Ensure animation runs only once
                   }
                 }
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               },
             ),
           Positioned(
@@ -76,12 +153,49 @@ class _MapPageState extends ConsumerState<MapPage> {
             right: 16,
             child: FloatingActionButton(
               onPressed: _centerMapOnChunks,
-              child: const Icon(Icons.my_location),
+              child: const Icon(Icons.center_focus_strong),
             ),
           ),
         ],
       ),
     );
+  }
+
+  /// Updates or adds a Point Annotation representing the user's current location.
+  Future<void> _updateUserLocationOnMap(geo.Position position) async {
+    if (!_isMapReady || _pointAnnotationManager == null) return;
+
+    final coordinates = Point(coordinates: Position(position.longitude, position.latitude));
+
+    // Define the annotation options
+    final annotationOptions = PointAnnotationOptions(
+      geometry: coordinates,
+      iconImage: "marker-15", // Use a default marker or a custom one
+      iconSize: 1.5,
+      iconColor: Colors.red.value, // Red color for visibility
+    );
+
+    if (_currentLocationAnnotation == null) {
+      // Add a new annotation for the user's location
+      _currentLocationAnnotation = await _pointAnnotationManager.create(annotationOptions);
+    } else {
+      // Update the existing annotation's position
+      await _pointAnnotationManager.update(_currentLocationAnnotation!,
+          );
+    }
+
+    // Optionally, animate the map to the user's location on first update
+    if (_savedCameraOptions == null) {
+      await _mapboxMap!.flyTo(
+        CameraOptions(
+          center: coordinates,
+          zoom: 14,
+          bearing: 0,
+          pitch: 0,
+        ),
+        MapAnimationOptions(duration: 1000),
+      );
+    }
   }
 
   void _centerMapOnChunks() async {
@@ -105,7 +219,8 @@ class _MapPageState extends ConsumerState<MapPage> {
           // Create CoordinateBounds with Point objects
           final bounds = CoordinateBounds(
             southwest: Point(coordinates: Position(minLng, minLat)),
-            northeast: Point(coordinates: Position(maxLng, maxLat)), infiniteBounds: true,
+            northeast: Point(coordinates: Position(maxLng, maxLat)),
+            infiniteBounds: true,
           );
 
           // Optional padding
@@ -147,7 +262,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       print('Error removing layer: $e');
     }
     try {
-      await mapboxMap.style.removeStyleSource(sourceId);
+      await mapboxMap.removeSource(sourceId);
     } catch (e) {
       print('Error removing source: $e');
     }
@@ -339,4 +454,8 @@ class _MapPageState extends ConsumerState<MapPage> {
       print('Error adding grid layer: $e');
     }
   }
+}
+
+extension on MapboxMap {
+  removeSource(String sourceId) {}
 }
