@@ -1,6 +1,5 @@
-// lib/views/pages/map_page.dart
-
 import 'dart:convert';
+import 'dart:math' show log, max, ln2;
 import 'package:been_there/models/chunk.dart';
 import 'package:been_there/view_models/auth_view_model.dart';
 import 'package:been_there/view_models/location_provider.dart';
@@ -25,7 +24,6 @@ class _MapPageState extends ConsumerState<MapPage>
 
   MapboxMap? _mapboxMap;
   bool _isMapReady = false;
-  bool _hasAnimatedToChunks = false;
   CameraOptions? _savedCameraOptions;
   late PointAnnotationManager _pointAnnotationManager;
   PointAnnotation? _currentLocationAnnotation;
@@ -34,6 +32,9 @@ class _MapPageState extends ConsumerState<MapPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // Set your Mapbox access token
+    MapboxOptions.setAccessToken("YOUR_MAPBOX_ACCESS_TOKEN"); // Replace with your actual token
   }
 
   @override
@@ -56,17 +57,27 @@ class _MapPageState extends ConsumerState<MapPage>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    final appUser = ref.watch(appUserProvider);
-    MapboxOptions.setAccessToken("YOUR_MAPBOX_ACCESS_TOKEN"); // Replace with your actual token
 
-    // Set initial camera options only if not already saved
-    CameraOptions camera = _savedCameraOptions ??
-        CameraOptions(
-          center: Point(coordinates: Position(-98.0, 39.5)),
-          zoom: 2,
-          bearing: 0,
-          pitch: 0,
-        );
+    final appUser = ref.watch(appUserProvider);
+
+    if (appUser == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    final locationChunksAsyncValue = ref.watch(locationViewModelProvider(appUser.id));
+    
+    final locationChunks = locationChunksAsyncValue;
+    if (locationChunks.isEmpty) {
+      return const CircularProgressIndicator(); // Show a loading indicator
+    }
+
+    // Compute initial camera options based on the chunks
+    final cameraOptions = CameraOptions(
+      center: Point(coordinates: Position(0, 0)),
+      zoom: 1,
+      bearing: 0,
+      pitch: 0,
+    );
 
     // Listen to location updates
     final locationAsyncValue = ref.watch(locationProvider);
@@ -99,7 +110,7 @@ class _MapPageState extends ConsumerState<MapPage>
         children: [
           MapWidget(
             key: const ValueKey("mapWidget"),
-            cameraOptions: camera,
+            cameraOptions: cameraOptions,
             styleUri: MediaQuery.of(context).platformBrightness == Brightness.dark
                 ? "mapbox://styles/jaredjones/clot6czi600kb01qq4arcfy2g"
                 : "mapbox://styles/jaredjones/clot66ah300l501pe2lmbg11p",
@@ -107,47 +118,21 @@ class _MapPageState extends ConsumerState<MapPage>
               _mapboxMap = mapboxMap;
               _isMapReady = true;
 
-              // Optionally, restore saved camera position
-              if (_savedCameraOptions != null) {
-                await _mapboxMap!.setCamera(_savedCameraOptions!);
-              }
-
               // Initialize PointAnnotationManager
               _pointAnnotationManager =
                   await _mapboxMap!.annotations.createPointAnnotationManager();
 
-              final appUser = ref.read(appUserProvider);
-              if (appUser != null && !_hasAnimatedToChunks) {
-                final locationChunks = ref.read(locationViewModelProvider(appUser.id));
-                if (locationChunks.isNotEmpty) {
-                  _updateChunksOnMap(mapboxMap, locationChunks);
-                  _addGridLines(mapboxMap);
-                  _centerMapOnChunks();
-                  _hasAnimatedToChunks = true; // Set the flag after animation
-                }
-              }
+              // Update chunks on map
+              _updateChunksOnMap(_mapboxMap!, locationChunks);
+
+              // Add grid lines
+              _addGridLines(_mapboxMap!);
+
+            },
+            onMapLoadedListener: (mapboxMap) async {
+              _centerMapOnChunks();
             },
           ),
-          // Use Consumer to listen for changes in locationChunks
-          if (appUser != null)
-            Consumer(
-              builder: (context, ref, child) {
-                final appUser = ref.watch(appUserProvider);
-                if (appUser != null) {
-                  final locationChunks =
-                      ref.watch(locationViewModelProvider(appUser.id));
-                  if (_isMapReady &&
-                      _mapboxMap != null &&
-                      locationChunks.isNotEmpty &&
-                      !_hasAnimatedToChunks) {
-                    _updateChunksOnMap(_mapboxMap!, locationChunks);
-                    _centerMapOnChunks();
-                    _hasAnimatedToChunks = true; // Ensure animation runs only once
-                  }
-                }
-                return const SizedBox.shrink();
-              },
-            ),
           Positioned(
             bottom: 16,
             right: 16,
@@ -160,6 +145,38 @@ class _MapPageState extends ConsumerState<MapPage>
       ),
     );
   }
+
+  // /// Computes the initial camera options based on the chunks
+  // CameraOptions _computeInitialCameraOptions(List<Chunk> chunks) {
+  //   double minLat = double.infinity;
+  //   double maxLat = double.negativeInfinity;
+  //   double minLng = double.infinity;
+  //   double maxLng = double.negativeInfinity;
+
+  //   for (var chunk in chunks) {
+  //     if (chunk.lowLatitude < minLat) minLat = chunk.lowLatitude;
+  //     if (chunk.highLatitude > maxLat) maxLat = chunk.highLatitude;
+  //     if (chunk.lowLongitude < minLng) minLng = chunk.lowLongitude;
+  //     if (chunk.highLongitude > maxLng) maxLng = chunk.highLongitude;
+  //   }
+
+  //   double centerLat = (minLat + maxLat) / 2;
+  //   double centerLng = (minLng + maxLng) / 2;
+
+  //   // Estimate zoom level (adjust as needed)
+  //   double deltaLat = maxLat - minLat;
+  //   double deltaLng = maxLng - minLng;
+  //   double maxDelta = max(deltaLat, deltaLng);
+  //   double zoom = (maxDelta > 0) ? (11 - (log(maxDelta) / ln2)) : 14;
+  //   zoom = zoom.clamp(0.0, 22.0);
+
+  //   return CameraOptions(
+  //     center: Point(coordinates: Position(centerLng, centerLat)),
+  //     zoom: zoom,
+  //     bearing: 0,
+  //     pitch: 0,
+  //   );
+  // }
 
   /// Updates or adds a Point Annotation representing the user's current location.
   Future<void> _updateUserLocationOnMap(geo.Position position) async {
@@ -180,24 +197,12 @@ class _MapPageState extends ConsumerState<MapPage>
       _currentLocationAnnotation = await _pointAnnotationManager.create(annotationOptions);
     } else {
       // Update the existing annotation's position
-      await _pointAnnotationManager.update(_currentLocationAnnotation!,
-          );
-    }
-
-    // Optionally, animate the map to the user's location on first update
-    if (_savedCameraOptions == null) {
-      await _mapboxMap!.flyTo(
-        CameraOptions(
-          center: coordinates,
-          zoom: 14,
-          bearing: 0,
-          pitch: 0,
-        ),
-        MapAnimationOptions(duration: 1000),
-      );
+      _currentLocationAnnotation!.geometry = coordinates;
+      await _pointAnnotationManager.update(_currentLocationAnnotation!);
     }
   }
 
+  /// Centers the map on the chunks
   void _centerMapOnChunks() async {
     if (_mapboxMap != null) {
       final appUser = ref.read(appUserProvider);
@@ -251,6 +256,7 @@ class _MapPageState extends ConsumerState<MapPage>
     }
   }
 
+  /// Updates the map with the user's chunks
   void _updateChunksOnMap(MapboxMap mapboxMap, List<Chunk> chunks) async {
     const sourceId = 'chunks-source';
     const layerId = 'chunks-layer';
@@ -262,7 +268,7 @@ class _MapPageState extends ConsumerState<MapPage>
       print('Error removing layer: $e');
     }
     try {
-      await mapboxMap.removeSource(sourceId);
+      await mapboxMap.style.removeStyleSource(sourceId);
     } catch (e) {
       print('Error removing source: $e');
     }
@@ -331,10 +337,10 @@ class _MapPageState extends ConsumerState<MapPage>
     // Get the list of existing layers
     List<StyleObjectInfo?> layers = await mapboxMap.style.getStyleLayers();
 
-    // Find the ID of the 'landuse' layer
+    // Find the ID of the 'land' layer
     String? beforeLayerId;
     for (var layer in layers) {
-      if (layer?.id == 'landuse') {
+      if (layer?.id == 'land') {
         beforeLayerId = layer?.id;
         break;
       }
@@ -351,18 +357,19 @@ class _MapPageState extends ConsumerState<MapPage>
       layerPosition = LayerPosition(above: beforeLayerId);
       print('Inserting layer above: $beforeLayerId');
     } else {
-      print('landuse layer not found, adding layer on top.');
+      print('land layer not found, adding layer on top.');
     }
 
     // Add the fill layer at the specified position
     try {
       await mapboxMap.style.addStyleLayer(layerJson, layerPosition);
-      print('Added layer above landuse layer');
+      print('Added layer above land layer');
     } catch (e) {
       print('Error adding layer: $e');
     }
   }
 
+  /// Adds grid lines to the map
   void _addGridLines(MapboxMap mapboxMap) async {
     const gridSourceId = 'grid-source';
     const gridLayerId = 'grid-layer';
@@ -454,8 +461,4 @@ class _MapPageState extends ConsumerState<MapPage>
       print('Error adding grid layer: $e');
     }
   }
-}
-
-extension on MapboxMap {
-  removeSource(String sourceId) {}
 }

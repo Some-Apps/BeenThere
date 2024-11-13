@@ -37,9 +37,9 @@ class _MainPageState extends ConsumerState<MainPage> {
     }
 
     const items = [
-      BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Profile'),
-      BottomNavigationBarItem(icon: Icon(Icons.archive), label: 'Map'),
-      BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Leaderboards'),
+      BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+      BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Leaderboards'),
     ];
 
     return Scaffold(
