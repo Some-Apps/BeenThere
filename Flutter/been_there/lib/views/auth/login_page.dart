@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -15,8 +16,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
+
   void signInWithApple() async {
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -26,13 +27,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ],
       );
 
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
+      final response = await _supabaseClient.auth.signInWithIdToken(
+        provider: Provider.apple,
+        idToken: appleCredential.identityToken!,
+        nonce: appleCredential.authorizationCode,
       );
 
-      final userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
-      ref.read(authViewModelProvider.notifier).setUser(userCredential.user);
+      if (response.error == null) {
+        ref.read(authViewModelProvider.notifier).setUser(response.user);
+      } else {
+        print("Error with Apple Sign-In: ${response.error!.message}");
+      }
     } catch (e) {
       print("Error with Apple Sign-In: $e");
     }
@@ -44,13 +49,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
+
+        final response = await _supabaseClient.auth.signInWithIdToken(
+          provider: Provider.google,
+          idToken: googleAuth.idToken!,
+          accessToken: googleAuth.accessToken!,
         );
 
-        final userCredential = await _firebaseAuth.signInWithCredential(credential);
-        ref.read(authViewModelProvider.notifier).setUser(userCredential.user);
+        if (response.error == null) {
+          ref.read(authViewModelProvider.notifier).setUser(response.user);
+        } else {
+          print("Error with Google Sign-In: ${response.error!.message}");
+        }
       }
     } catch (e) {
       print("Error with Google Sign-In: $e");

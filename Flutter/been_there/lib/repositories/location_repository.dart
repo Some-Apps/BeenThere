@@ -1,23 +1,19 @@
 // location_repository.dart
 import 'package:been_there/models/chunk.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LocationRepository {
-  final FirebaseFirestore _firestore;
+  final SupabaseClient _supabase;
 
-  LocationRepository(this._firestore);
+  LocationRepository(this._supabase);
 
   Stream<List<Chunk>> getLocationChunks(String userId) {
-    return _firestore.collection('users').doc(userId).snapshots().map((snapshot) {
-      final data = snapshot.data();
-      if (data != null && data['locations'] != null) {
-        List<dynamic> locationData = data['locations'];
-        return locationData.map((item) {
-          return Chunk.fromMap(item as Map<String, dynamic>);
-        }).toList();
-      } else {
-        return [];
-      }
+    return _supabase
+        .from('locations')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .map((data) {
+      return data.map((item) => Chunk.fromMap(item)).toList();
     });
   }
 }

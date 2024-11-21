@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/app_user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/app_user.dart';
 
@@ -8,37 +9,36 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  final FirebaseFirestore _firestore;
-  final FirebaseAuth _firebaseAuth;
+  final SupabaseClient _supabaseClient;
 
   AuthRepository({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? firebaseAuth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    SupabaseClient? supabaseClient,
+  }) : _supabaseClient = supabaseClient ?? Supabase.instance.client;
 
   // Fetch user by ID
   Future<AppUser?> getUserById(String userId) async {
-    final doc = await _firestore.collection('users').doc(userId).get();
-    if (doc.exists) {
-      return AppUser.fromDocument(doc);
-    }
+    try {
+      final response = await _supabaseClient
+          .from('users')
+          .select()
+          .eq('id', userId)
+          .single();
 
-    return null;
+      return AppUser.fromMap(response);
+    } catch (e) {
+      return null;
+    }
   }
 
-
-  // Get the current Firebase user
+  // Get the current Supabase user
   User? getCurrentUser() {
-    return _firebaseAuth.currentUser;
+    return _supabaseClient.auth.currentUser;
   }
 
   // Sign out user
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _supabaseClient.auth.signOut();
   }
-
-  
 
   Future<void> createUserDocument({
     required String uid,
@@ -46,9 +46,14 @@ class AuthRepository {
     required String displayName,
   }) async {
     // Create or update user document with device settings
-    await _firestore.collection('users').doc(uid).set({
+    final response = await _supabaseClient.from('users').upsert({
+      'id': uid,
       'email': email.trim(),
       'displayName': displayName.trim(),
-    }, SetOptions(merge: true));
+    });
+
+    if (response.error != null) {
+      throw response.error!;
+    }
   }
 }

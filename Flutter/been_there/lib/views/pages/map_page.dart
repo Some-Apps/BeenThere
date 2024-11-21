@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math' show log, max, ln2;
 import 'package:been_there/models/chunk.dart';
 import 'package:been_there/view_models/auth_view_model.dart';
 import 'package:been_there/view_models/location_provider.dart';
@@ -61,7 +60,7 @@ class _MapPageState extends ConsumerState<MapPage>
     final appUser = ref.watch(appUserProvider);
 
     if (appUser == null) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     final locationChunksAsyncValue = ref.watch(locationViewModelProvider(appUser.id));
@@ -180,7 +179,7 @@ class _MapPageState extends ConsumerState<MapPage>
 
   /// Updates or adds a Point Annotation representing the user's current location.
   Future<void> _updateUserLocationOnMap(geo.Position position) async {
-    if (!_isMapReady || _pointAnnotationManager == null) return;
+    if (!_isMapReady) return;
 
     final coordinates = Point(coordinates: Position(position.longitude, position.latitude));
 

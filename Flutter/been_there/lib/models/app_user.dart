@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class AppUser {
   final String id;
   final String email;
   final String displayName;
-
 
   AppUser({
     required this.id,
@@ -12,14 +9,22 @@ class AppUser {
     required this.displayName,
   });
 
-  // Factory constructor to create AppUser from Firestore document
-  factory AppUser.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  // Factory constructor to create AppUser from Supabase data
+  factory AppUser.fromMap(Map<String, dynamic> data) {
     return AppUser(
-      id: doc.id,
-      email: data['email'],
-      displayName: data['displayName'],
+      id: data['id'].toString(),
+      email: data['email'] ?? '',
+      displayName: data['display_name'] ?? '',
     );
+  }
+
+  // Convert user to Map for Supabase
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'email': email,
+      'display_name': displayName,
+    };
   }
 
   // CopyWith method to create a copy of AppUser with optional changes
@@ -30,7 +35,7 @@ class AppUser {
   }) {
     return AppUser(
       id: id ?? this.id,
-      email: email ?? this.email, 
+      email: email ?? this.email,
       displayName: displayName ?? this.displayName,
     );
   }

@@ -1,10 +1,10 @@
 
 import 'package:been_there/models/app_user.dart';
 import 'package:been_there/repositories/auth_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 final appUserProvider = StateProvider<AppUser?>((ref) => null);
@@ -26,8 +26,8 @@ class AuthViewModel extends StateNotifier<AuthState> {
     try {
       final user = _authRepository.getCurrentUser();
       if (user != null) {
-        print("User found: ${user.uid}");
-        final appUser = await _authRepository.getUserById(user.uid);
+        print("User found: ${user.id}");
+        final appUser = await _authRepository.getUserById(user.id);
         if (appUser != null) {
           print("AppUser found: ${appUser.id}");
           state = AuthState.authenticated(appUser);
@@ -48,11 +48,11 @@ class AuthViewModel extends StateNotifier<AuthState> {
   void setUser(User? user) async {
     if (user != null) {
       _authRepository.createUserDocument(
-        uid: user.uid,
+        uid: user.id,
         email: user.email ?? '',
-        displayName: user.displayName ?? '',
+        displayName: user.aud,
       );
-      final appUser = await _authRepository.getUserById(user.uid);
+      final appUser = await _authRepository.getUserById(user.id);
       if (appUser != null) {
         state = AuthState.authenticated(appUser);
       } else {

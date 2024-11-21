@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:been_there/models/chunk.dart';
 import 'package:been_there/repositories/location_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final locationRepositoryProvider = Provider<LocationRepository>((ref) {
-  return LocationRepository(FirebaseFirestore.instance);
+  return LocationRepository(Supabase.instance.client);
 });
 
 class LocationViewModel extends StateNotifier<List<Chunk>> {
