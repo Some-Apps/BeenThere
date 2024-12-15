@@ -11,7 +11,7 @@ struct LoginView: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
     @State private var isAppleSignInPresented: Bool = false
     @State private var currentImageIndex: Int = 0
-    @ObservedObject var viewModel = LoginViewModel()
+    @ObservedObject var viewModel = AuthenticationViewModel()
 
     var body: some View {
         GeometryReader { geometry in
@@ -79,12 +79,8 @@ struct SignInApple: View {
             switch result {
             case .success(let authResults):
                 if let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential {
-                    let credential = OAuthProvider.credential(
-                        providerID: AuthProviderID.apple,  // Use the new method
-                        idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!,
-                        rawNonce: "",  // Provide a rawNonce if you have one, otherwise an empty string
-                        accessToken: nil  // Pass nil if you don't have an accessToken
-                    )
+                    let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                              idToken: String(data: appleIDCredential.identityToken!, encoding: .utf8)!, accessToken: nil)
                     
                     Auth.auth().signIn(with: credential) { (authResult, error) in
                         if let error = error {
@@ -112,8 +108,8 @@ struct SignInApple: View {
             if let document = document, !document.exists {
                 let data: [String: Any] = [
                     "uid": Auth.auth().currentUser?.uid ?? "",
-                    "firstName": appleIDCredential.fullName?.givenName?.description as? String ?? "",
-                    "lastName": appleIDCredential.fullName?.familyName?.description as? String ?? ""
+                    "firstName": appleIDCredential.fullName?.givenName ?? "",
+                    "lastName": appleIDCredential.fullName?.familyName ?? ""
                 ]
                 userDocumentRef.setData(data) { error in
                     if let error = error {
@@ -130,7 +126,6 @@ struct SignInApple: View {
 }
 
 
-
-//#Preview {
-//    LoginView()
-//}
+#Preview {
+    LoginView()
+}

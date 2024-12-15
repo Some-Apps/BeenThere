@@ -1,8 +1,14 @@
+//
+//  EditProfileView.swift
+//  BeenThere
+//
+//  Created by Jared Jones on 11/13/23.
+//
 
 import Firebase
 import FirebaseAuth
 import SwiftUI
-import Kingfisher
+//import Kingfisher
 
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
@@ -52,48 +58,50 @@ struct EditProfileView: View {
     
     var body: some View {
             List {
-                Section {
-                    HStack {
-                        if profileImage != nil {
-                            if let profileImage = profileImage {
-                                profileImage
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.crop.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                            }
-                        } else {
-                            if let imageUrl = accountViewModel.profileImageUrl {
-                                KFImage(imageUrl)
-                                    .resizable()
-                                    .placeholder {
-                                        ProgressView()
-                                    }
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.crop.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                            }
-                        }
-                        
-                        
-                        Button("Change Photo") {
-                            showingImagePicker = true
-                        }
-
-                    }
-                }
+//                Section {
+//                    HStack {
+//                        if profileImage != nil {
+//                            if let profileImage = profileImage {
+//                                profileImage
+//                                    .resizable()
+//                                    .scaledToFill()
+//                                    .frame(width: 80, height: 80)
+//                                    .clipShape(Circle())
+//                            } else {
+//                                Image(systemName: "person.crop.circle.fill")
+//                                    .resizable()
+//                                    .scaledToFill()
+//                                    .frame(width: 80, height: 80)
+//                                    .clipShape(Circle())
+//                            }
+//                        } else {
+//                            if let imageUrl = accountViewModel.profileImageUrl {
+//                                KFImage(imageUrl)
+//                                    .resizable()
+//                                    .placeholder {
+//                                        ProgressView()
+//                                    }
+//                                    .scaledToFill()
+//                                    .frame(width: 80, height: 80)
+//                                    .clipShape(Circle())
+//                            } else {
+//                                Image(systemName: "person.crop.circle.fill")
+//                                    .resizable()
+//                                    .scaledToFill()
+//                                    .frame(width: 80, height: 80)
+//                                    .clipShape(Circle())
+//                            }
+//                        }
+//                        
+//                        
+//                        Button("Change Photo") {
+//                            showingImagePicker = true
+//                        }
+//                        .foregroundStyle(Color.mutedPrimary)
+//
+//                    }
+//                }
+//                .listRowBackground(Color.rowBackground)
 
                 
                 Section {
@@ -101,12 +109,14 @@ struct EditProfileView: View {
                         Text("First Name: ")
                             .foregroundStyle(.tertiary)
                         TextField("First Name", text: $firstName)
+                            .foregroundStyle(Color.mutedPrimary)
 
                     }
                     HStack {
                         Text("Last Name: ")
                             .foregroundStyle(.tertiary)
                         TextField("Last Name", text: $lastName)
+                            .foregroundStyle(Color.mutedPrimary)
                         
                     }
                     HStack {
@@ -119,6 +129,7 @@ struct EditProfileView: View {
                                 checkAndSetUsername()
                             }
                         TextField("New Username", text: $newUsername)
+                            .foregroundStyle(Color.mutedPrimary)
 
                             .onChange(of: newUsername) {
                                 checkAndSetUsername()
@@ -130,6 +141,7 @@ struct EditProfileView: View {
                     if invalidUsernameReason != "" {
                         Text(invalidUsernameReason)
                             .fontWeight(.black)
+                            .foregroundStyle(Color.mutedPrimary)
 
                         
                     } else if isUsernameTaken {
@@ -137,6 +149,7 @@ struct EditProfileView: View {
                             .fontWeight(.black)
                     }
                 }
+                .listRowBackground(Color.rowBackground)
 
                 .onAppear {
                     firstName = accountViewModel.firstName
@@ -154,14 +167,17 @@ struct EditProfileView: View {
                             }
                             dismiss()
                         }
+                        .foregroundStyle(Color.mutedPrimary)
 
                         .disabled(isDisabled)
                         Spacer()
                     }
                     
                 }
+                .listRowBackground(Color.rowBackground)
 
             }
+            .background(Color.background)
 
             .listStyle(.plain)
             //            .navigationTitle("Edit Profile")
