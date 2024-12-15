@@ -1,13 +1,15 @@
 import Foundation
 import Firebase
-import FirebaseAuth
 import AuthenticationServices
 import SwiftUI
 import FirebaseAuth
 import FirebaseStorage
-import CoreLocation
 
-class AccountViewModel: ObservableObject {
+class ProfileViewModel: ObservableObject {
+    
+    static let sharedMain = AccountViewModel()
+    static let sharedFriend = AccountViewModel()
+    static let sharedShared = AccountViewModel()
     @Published var me: Person?
     @ObservedObject var authViewModel = AuthViewModel()
     @AppStorage("appState") var appState = ""
@@ -27,13 +29,7 @@ class AccountViewModel: ObservableObject {
     @AppStorage("lowercaseUsername") var lowercaseUsername = ""
     
     @Published var locations: [Location] = []
-    @Published var friendLocations: [Location] = []
-    @Published var mapSelection: MapSelection = .personal {
-        didSet {
-            observeLocations()
-        }
-    }
-    @Published var displayedLocations: [Location] = [] 
+    
     @Published var isCheckingUsername: Bool = false
     @Published var isUsernameTaken: Bool = false
     @Published var friends: [[String: Any]] = []
@@ -42,7 +38,6 @@ class AccountViewModel: ObservableObject {
     @Published var profileImageUrl: URL?
     @Published var profileImageUrls: [String: URL] = [:]
     
-   
     var userLocations: [Location] {
         let tempLocations = users.flatMap { user -> [Location] in
             guard let locationDictionaries = user["locations"] as? [[String: Double]] else {
@@ -117,111 +112,6 @@ class AccountViewModel: ObservableObject {
         accountListener?.remove()
         for listener in listeners {
             listener.remove()
-        }
-    }
-    
-    func observeLocations() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let locations: [Location]
-            switch self.mapSelection {
-            case .personal:
-                locations = self.locations
-            case .global:
-                locations = self.userLocations
-            case .friend(let friendID):
-                self.fetchFriendLocations(id: friendID)
-                locations = self.friendLocations
-            }
-            DispatchQueue.main.async {
-                self.displayedLocations = locations
-            }
-        }
-    }
-
-    
-    func fetchFriendLocations(id: String) {
-        if let friend = friends.first(where: { $0["uid"] as? String == id }),
-           let tempFriendLocations = friend["locations"] as? [[String: Any]] {
-            
-            // Convert each dictionary into a Location object
-            friendLocations = tempFriendLocations.compactMap { dict in
-                guard let lowLatitude = dict["lowLatitude"] as? Double,
-                      let highLatitude = dict["highLatitude"] as? Double,
-                      let lowLongitude = dict["lowLongitude"] as? Double,
-                      let highLongitude = dict["highLongitude"] as? Double else {
-                          return nil
-                      }
-                return Location(lowLatitude: lowLatitude, highLatitude: highLatitude, lowLongitude: lowLongitude, highLongitude: highLongitude)
-            }
-        } else {
-            print("friend has no locations")
-            friendLocations = []
-        }
-    }
-    
-    func checkBeenThere(location: CLLocation) {
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-
-        let increment: Double = 0.25
-        
-        let lowLatitude = floor(latitude / increment) * increment
-        let highLatitude = lowLatitude + increment
-        let lowLongitude = floor(longitude / increment) * increment
-        let highLongitude = lowLongitude + increment
-
-        let locationExists = locations.contains { existingLocation in
-            existingLocation.lowLatitude == lowLatitude &&
-            existingLocation.highLatitude == highLatitude &&
-            existingLocation.lowLongitude == lowLongitude &&
-            existingLocation.highLongitude == highLongitude
-        }
-
-        if !locationExists {
-            print("LOG: Saving to firestore")
-            saveLocationToFirestore(lowLat: lowLatitude, highLat: highLatitude, lowLong: lowLongitude, highLong: highLongitude)
-        }
-    }
-    
-    
-    func saveLocationToFirestore(lowLat: Double, highLat: Double, lowLong: Double, highLong: Double) {
-        let locationData: [String: Any] = [
-            "lowLatitude": lowLat,
-            "highLatitude": highLat,
-            "lowLongitude": lowLong,
-            "highLongitude": highLong,
-            "timestamp": Date.now.timeIntervalSince1970
-        ]
-        
-        guard let userID = Auth.auth().currentUser?.uid else {
-            print("Error: No authenticated user found")
-            return
-        }
-
-        let userDocumentRef = db.collection("users").document(userID)
-        
-        userDocumentRef.getDocument { (document, error) in
-            if let document = document, document.exists {
-                userDocumentRef.updateData([
-                    "locations": FieldValue.arrayUnion([locationData])
-                ]) { error in
-                    if let error = error {
-                        print("Error adding location: \(error)")
-                    } else {
-                        print("Location successfully updated!")
-                    }
-                }
-            } else {
-                userDocumentRef.setData([
-                    "locations": [locationData]
-                ]) { error in
-                    if let error = error {
-                        print("Error creating document with location: \(error)")
-                    } else {
-                        print("Document successfully created with location!")
-                    }
-                }
-            }
         }
     }
     
@@ -563,16 +453,6 @@ class AccountViewModel: ObservableObject {
 
             if let locationData = data["locations"] as? [[String: Any]] {
                 self?.locations = locationData.compactMap { locationDict in
-                    do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: locationDict, options: [])
-                        let location = try JSONDecoder().decode(Location.self, from: jsonData)
-                        return location
-                    } catch {
-                        print("Error decoding location: \(error)")
-                        return nil
-                    }
-                }
-                self?.displayedLocations = locationData.compactMap { locationDict in
                     do {
                         let jsonData = try JSONSerialization.data(withJSONObject: locationDict, options: [])
                         let location = try JSONDecoder().decode(Location.self, from: jsonData)

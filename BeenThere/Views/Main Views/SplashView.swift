@@ -1,10 +1,3 @@
-//
-//  SplashView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 1/13/24.
-//
-
 import SwiftUI
 
 struct SplashView: View {
@@ -19,11 +12,10 @@ struct SplashView: View {
                 Text("Been There")
                     .font(.largeTitle)
                     .fontWeight(.black)
-//                    .foregroundStyle(.mutedPrimary)
+                    .foregroundStyle(.white)
                     .shadow(radius: 5)
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 

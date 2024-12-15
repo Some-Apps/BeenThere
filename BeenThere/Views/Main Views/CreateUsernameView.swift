@@ -1,10 +1,3 @@
-//
-//  CreateUsernameView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 11/6/23.
-//
-
 import SwiftUI
 import Firebase
 import FirebaseAuth
@@ -23,7 +16,6 @@ struct CreateUsernameView: View {
     @State private var lastCheckInitiationTime: Date? = nil
     private let debounceInterval = 0.5 // or whatever value you've determined is appropriate
     @FocusState private var isUsernameFieldFocused: Bool
-    @State private var showSplash = true
     
     var isUsernameValid: Bool {
         let regex = "^[a-zA-Z0-9]{4,15}$"
@@ -48,16 +40,7 @@ struct CreateUsernameView: View {
     let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        if showSplash {
-            SplashView()
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        withAnimation {
-                            showSplash = false
-                        }
-                    }
-                }
-        } else {
+        
             GeometryReader { geometry in
             ZStack {
                 Color(.background)
@@ -148,7 +131,6 @@ struct CreateUsernameView: View {
                     appState = "notAuthenticated"
                 }
             }
-            .preferredColorScheme(.light)
             .onReceive(timer) { _ in
                 withAnimation(.easeInOut(duration: 2)) {
                     currentImageIndex = Int.random(in: 0..<imageNames.count)
@@ -164,7 +146,6 @@ struct CreateUsernameView: View {
                 }
                 isUsernameFieldFocused = true
             }
-        }
 
         }
             

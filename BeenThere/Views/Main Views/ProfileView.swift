@@ -1,21 +1,12 @@
-//
-//  ProfileView.swift
-//  BeenThere
-//
-//  Created by Jared Jones on 11/6/23.
-//
-
 import SwiftUI
 //import Kingfisher
 
 struct ProfileView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var viewModel: AccountViewModel
+    @EnvironmentObject var viewModel: ProfileViewModel
     @AppStorage("appState") var appState = "authenticated"
     @State private var navigationPath = NavigationPath()
 
-
-    
     var body: some View {
         NavigationStack(path: $navigationPath) {
             VStack {
@@ -44,10 +35,15 @@ struct ProfileView: View {
                         .foregroundStyle(Color.mutedPrimary)
                     Text("@\(viewModel.username)")
                         .font(.title2)
+
 //                        .fontWeight(.bold)
                         .foregroundStyle(Color.mutedPrimary)
 
+
                     Text(viewModel.locations.count == 1 ? "\(viewModel.locations.count) Chunk Explored" : "\(viewModel.locations.count) Chunks Explored")
+                        .fontWeight(.regular)
+                        .foregroundStyle(.secondary)
+                    Text("(\(Double(viewModel.locations.count) / 1036800 * 100, specifier: "%.3f")% of the Earth)")
                         .fontWeight(.regular)
                         .foregroundStyle(.secondary)
                     SettingsView(navigationPath: $navigationPath)
@@ -66,7 +62,6 @@ struct ProfileView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(Color.background)
             .navigationDestination(for: DestinationID.self) { id in
                             switch id {
                             case editProfileID:
@@ -95,51 +90,3 @@ let manageFriendsID = DestinationID(id: "Manage Friends")
 let sharingID = DestinationID(id: "Sharing")
 let deleteAccountID = DestinationID(id: "Delete Account")
 
-//#Preview {
-//    ProfileView()
-//}
-
-
-
-//                List {
-//                    Section {
-//                        NavigationLink {
-//                            EditProfileView()
-//                        } label: {
-//                            Text("Edit Profile")
-//                        }
-//                        NavigationLink {
-//                            ManageFriendsView()
-//                        } label: {
-//                            HStack {
-//                                Text("Manage Friends")
-//                                Spacer()
-//                                if viewModel.receivedFriendRequests.count > 0 {
-//                                    Image(systemName: "bell.badge.circle.fill")
-//                                        .foregroundStyle(.red)
-//                                        .font(.title3)
-//                                        .fontWeight(.black)
-//                                }
-//                            }
-//                        }
-//                        NavigationLink {
-//                            SettingsView()
-//                                .environmentObject(viewModel)
-//                        } label: {
-//                            Text("Settings")
-//                        }
-//                    }
-//                    Section {
-//
-//                        Button("Sign Out") {
-//                            viewModel.signOut()
-//                            dismiss()
-//                            appState = "notAuthenticated"
-//                        }
-//                        NavigationLink("Delete Account") {
-//                            ConfirmDeleteAccountView()
-//                                .environmentObject(viewModel)
-//                        }
-//                    }
-//
-//                }

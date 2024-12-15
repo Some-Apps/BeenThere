@@ -51,14 +51,12 @@ struct BeenThereApp: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject var authViewModel = AuthViewModel()
     @StateObject var accountViewModel = AccountViewModel()
+    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
+    @StateObject private var locationManagerDelegate = LocationManagerDelegate()
+    @StateObject private var profileViewModel = ProfileViewModel()
 
     @AppStorage("appState") var appState = "notAuthenticated"
     @AppStorage("username") var username = ""
-
-
-//    init() {
-//        setupTerminationObserver()
-//    }
     
     var body: some Scene {
         WindowGroup {
@@ -85,7 +83,6 @@ struct BeenThereApp: App {
                         .statusBarHidden()
                 }
             }
-            .preferredColorScheme(.dark)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     determineUIState()
@@ -97,6 +94,8 @@ struct BeenThereApp: App {
         }
         .environmentObject(accountViewModel)
         .environmentObject(authViewModel)
+        .environmentObject(leaderboardViewModel)
+        .environmentObject(profileViewModel)
     }
     
     func determineUIState() {
@@ -113,14 +112,6 @@ struct BeenThereApp: App {
             }
         }
     }
-    
-//    private func setupTerminationObserver() {
-//        NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: nil) { _ in
-//            // The app is about to terminate, save your data here
-//            showSplash = true
-//            print("App is terminating. Saved data to UserDefaults.")
-//        }
-//    }
 }
 
 

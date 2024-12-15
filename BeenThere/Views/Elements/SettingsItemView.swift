@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsItemView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     let icon: Image
     let text: String
     let destinationID: DestinationID
@@ -28,7 +30,7 @@ struct SettingsItemView: View {
                 }
                 
                 Text(text)
-                    .foregroundStyle(Color.mutedPrimary)
+                    .foregroundStyle(colorScheme == .light ? .black : .white)
                     .padding(.leading)
                 Spacer()
             }
